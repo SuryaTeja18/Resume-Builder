@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enter your Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css"/>
+</head>
+<body>
+    <h1 class="title has-background-success" style="height:50px;">Details</h1>
+    <center>
+    <form method="post">
+        {% csrf_token %}
+        <input class="input" name = "user_name" placeholder="Enter Your Name:"/><br><hr>
+        <input class="input" name = "email" placeholder="Enter Your Email:"/><br><hr>
+        <input class="input" name = "phone" placeholder="Enter Your PhoneNo.:"/><br><hr>
+        <input class="input" name = "skills" placeholder="Enter Skills (comma separated!)"><br><hr>
+        <input class="input" name="edu" placeholder="Enter Your Education Details(comma separated!)"><br><hr>
+        <input class="input textbox" name="awards" placeholder="Enter Awards"><br><hr>
+        <input class="input" name = "name" placeholder="Enter Your Resume Name:"/><br><hr>
+        <a href="{% url 'enter_details' %}"> <button class="button has-background-grey-lighter">Get Resume</button></a>
+    </form>
+    <hr>
+    </center>
+</body>
+</html>

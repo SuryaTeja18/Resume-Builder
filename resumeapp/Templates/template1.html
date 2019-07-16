@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <title>{{name}}'s Resume</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css"/>
+    </head>
+    <body>
+        <h1 class="title has-background-gray">{{name}}</h1>
+        <h2><b>Skills</b></h2>
+        <ul class="has-background-primary">
+            {% for skill in skills %}
+                <li>{{skill}}</li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>

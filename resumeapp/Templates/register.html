@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignUp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+</head>
+<body>
+<h1 class="title has-background-success" style="height:50px;">Register Here..</h1>
+<center>
+    <form class="form" method="post">
+        {% csrf_token %}
+<table class="table">
+    {{form.as_table}}
+</table>
+<button type="submit" class="button has-background-grey-lighter">Submit</button>
+    </form>
+<hr>
+<a href = "{% url 'login' %}">Login</a>
+</center>
+</body>
+</html>

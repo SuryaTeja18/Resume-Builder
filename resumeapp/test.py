@@ -15,10 +15,8 @@ class details(forms.Form):
     name = forms.CharField(max_length=100,widget=forms.TextInput(attrs={'class':'input','placeholder':'Enter Name','name':'name'}))
     skills = forms.CharField(widget=forms.TextInput(attrs={'class':'input','placeholder':'Enter skills','name':'skills'}))
 
-
-dynamodb = boto3.resource('dynamodb',aws_access_key_id='AKIAQAEZBTOIKBXNZBK5', aws_secret_access_key='PqV7P/0cetfpYy5Pj6c7fYE7lC6JTiYGpL2m80XH', region_name='us-east-1')
-s3 = boto3.resource('s3',aws_access_key_id='AKIAQAEZBTOIKBXNZBK5', aws_secret_access_key='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', region_name='us-east-1')
-'''ec2 = boto3.client('ec2',aws_access_key_id='AKIAQAEZBTOIKBXNZBK5', aws_secret_access_key='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', region_name='us-east-1')'''
+#dynamodb = boto3.resource('dynamodb',aws_access_key_id='AKIAQAEZBTOIKBXNZBK5', aws_secret_access_key='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', region_name='us-east-1')
+s3 = boto3.resource('s3',aws_access_key_id='', aws_secret_access_key='', region_name='us-east-1')
 
 class demo(View):
     def get(self, request, *args, **kwargs):
@@ -37,10 +35,10 @@ class demo_submit(View):
             #return HttpResponse(response['Key'])
             #table = dynamodb.Table('demo')
             #response = table.put_item(Item={'house':'white','name':'whstu'})
-            path1 = "./template1.png"
-            path2 = "./template2.png"
-            s3.Bucket('18suryateja.demo1').upload_file(path1,Key='resumeTemplate1.png')
-            s3.Bucket('18suryateja.demo1').upload_file(path2,Key='resumeTemplate2.png')
+            # path1 = "./template1.png"
+            # path2 = "./template2.png"
+            # s3.Bucket('18suryateja.demo1').upload_file(path1,Key='resumeTemplate1.png')
+            # s3.Bucket('18suryateja.demo1').upload_file(path2,Key='resumeTemplate2.png')
             return HttpResponse("21212")
 
 class enter_details(View):
@@ -56,7 +54,8 @@ class get_resume(View):
         return HttpResponse(kwargs['id'])
 
 
-class showTemplates(View):
+class showTemplates(LoginRequiredMixin,View):
+    login_url = '/login/'
     def get(self,request,*args,**kwargs):
         return render(request,"showtemplates.html")
 
@@ -66,31 +65,73 @@ class processSelectedTemplate(View):
     def post(self,request,*args,**kwargs):
         data = request.POST
         doc = docx.Document()
-        doc.add_heading(data['user_name'], 0)
-        doc.add_heading(data['email'],4)
-        doc.add_heading(data['phone'],4)
-        doc.add_heading('Skills', 2)
-        doc_para = doc.add_paragraph(' ')
-        for skill in data['skills'].split(','):
-            doc_para.add_run(skill+', ').bold = True
+        if(str(kwargs['id'])=='1'):
+            doc.add_heading(data['user_name'], 0)
+            doc.add_heading('Email: '+ data['email'])
+            doc.add_heading('Address: '+data['address'])
+            doc.add_heading('Contact No.' + data['phone'])
+            doc.add_heading('Skills')
+            for skill in data['skills'].split(','):
+                p0 = doc.add_paragraph(skill, style='List Bullet')
         # add a page break to start a new page
         #doc.add_page_break()
         # add a heading of level 2
-        doc.add_heading('Education', 2)
-        doc_para = doc.add_paragraph(' ')
-        for ed in data['edu'].split(','):
-            doc_para.add_run(ed+', ').bold = True
+            doc.add_heading("Workshops and Events:")
+            doc_para= doc.add_paragraph(data['workshops'])
+            doc.add_heading('Education')
+            doc_para = doc.add_paragraph(' ')
+            for ed in data['edu'].split(','):
+                p0 = doc.add_paragraph(ed, style='List Bullet')
+            doc.add_heading('Awards')
+            doc_para = doc.add_paragraph(' ')
+            for award in data['awards'].split(','):
+                doc_para.add_run(award + ', ').bold = True
+            doc.add_heading("Hobbies: ")
+            doc_para = doc.add_paragraph(data['hobbies'])
+            doc.add_heading("Languages Known:")
+            doc_para = doc.add_paragraph(data['languages'])
+        else:
+            doc.add_heading(data['user_name'], 0)
+            doc.add_heading('Email: ' + data['email'], 4)
+            doc.add_heading('Contact No.' + data['phone'], 4)
+            doc.add_heading('Education')
+            table = doc.add_table(rows=4, cols=3)
+            doc.add_paragraph(' ')
+            num = 1
+            table.cell(0,0).text = "Name of the College/School"
+            table.cell(0,1).text = "Marks/CGPA"
+            table.cell(0,2).text = "Specialization"
+            table.cell(1, 0).text = data['edu'].split(',')[0]
+            table.cell(2, 0).text = data['edu'].split(',')[1]
+            table.cell(3,0).text =  data['edu'].split(',')[2]
+            table.cell(1,1).text = "B.Tech"
+            table.cell(2,1).text = "Board of Intermediate"
+            table.cell(3,1).text = "10th Class"
+            table.cell(1,2).text = '75';table.cell(2,2).text = "97"; table.cell(3,2).text = "85"
+            table.style = 'Table Grid'
+            doc.add_heading('Skills')
+            for skill in data['skills'].split(','):
+                p0 = doc.add_paragraph(skill, style='List Bullet')
+        #doc.add_column(30)
         # pictures can also be added to our word document
         # width is optional
         #    doc.add_picture('path_to_picture')
         # now save the document to a location
-        doc.add_heading('Awards', 2)
-        doc_para = doc.add_paragraph(' ')
-        for award in data['awards'].split(','):
-            doc_para.add_run(award+', ').bold = True
+            doc.add_heading("Technical Events:")
+            doc_para = doc.add_paragraph(data['workshops'])
+            doc.add_heading('Awards')
+            doc_para = doc.add_paragraph(' ')
+            for award in data['awards'].split(','):
+                doc_para.add_run(award+', ').bold = True
+            doc.add_heading('Address: ')
+            doc_para = doc.add_paragraph(data['address'])
+            doc.add_heading("Hobbies: ")
+            doc_para = doc.add_paragraph(data['hobbies'])
+            doc.add_heading("Languages Known:")
+            doc_para = doc.add_paragraph(data['languages'])
         doc.save(data['name']+'.docx')
-        res = s3.Bucket('18suryateja.demo1').upload_file(data['name']+'.docx', Key=data['name']+'.docx')
-        table = dynamodb.Table('demo')
-        response = table.put_item(Item={'house':'https://s3.ap-south-1.amazonaws.com/18suryateja.demo1/'+data['name'],'name':data['name']})
-        bucket_file_path = "https://s3.ap-south-1.amazonaws.com/18suryateja.demo1/"+data['name']+'.docx'
-        return HttpResponse(f"<a href={bucket_file_path}><button class='button'>Download</button></a>")
+        res = s3.Bucket('resbucket587').upload_file(data['name']+'.docx', Key=data['name']+'.docx')
+        # table = dynamodb.Table('demo')
+        #response = table.put_item(Item={'house':'https://s3.ap-south-1.amazonaws.com/18suryateja.demo1/'+data['name'],'name':data['name']})
+        bucket_file_path = "https://s3.ap-south-1.amazonaws.com/resbucket587/"+data['name']+'.docx'
+        return HttpResponse(f"<br><br><center><a href={bucket_file_path}><button class='button'>Download Your Resume</button></a></center>")

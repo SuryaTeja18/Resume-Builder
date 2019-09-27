@@ -15,8 +15,8 @@ class details(forms.Form):
     name = forms.CharField(max_length=100,widget=forms.TextInput(attrs={'class':'input','placeholder':'Enter Name','name':'name'}))
     skills = forms.CharField(widget=forms.TextInput(attrs={'class':'input','placeholder':'Enter skills','name':'skills'}))
 
-#dynamodb = boto3.resource('dynamodb',aws_access_key_id='AKIAQAEZBTOIKBXNZBK5', aws_secret_access_key='PqV7P/0cetfpYy5Pj6c7fYE7lC6JTiYGpL2m80XH', region_name='us-east-1')
-s3 = boto3.resource('s3',aws_access_key_id='', aws_secret_access_key='', region_name='us-east-1')
+dynamodb = boto3.resource('dynamodb',aws_access_key_id='your_ak_here', aws_secret_access_key='your_sak_here', region_name='us-east-1')
+s3 = boto3.resource('s3',aws_access_key_id='your_ak_here', aws_secret_access_key='your_sak_here', region_name='us-east-1')
 
 class demo(View):
     def get(self, request, *args, **kwargs):
@@ -27,18 +27,18 @@ class demo_submit(View):
         if(True):
             # table = dynamodb.Table('demo')
             # print(table)
-            #client = boto3.client('s3',aws_access_key_id='AKIAQAEZBTOIKBXNZBK5', aws_secret_access_key='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', region_name='us-east-1')
+            #client = boto3.client('s3',aws_access_key_id='', aws_secret_access_key='', region_name='us-east-1')
             #response = client.list_objects(Bucket='18suryateja.demo1')
             # for content in response['Contents']:
             #     obj_dict = client.get_object(Bucket='18suryateja.demo1', Key=content['Key'])
             #     print(content['Key'], obj_dict['LastModified'])
             #return HttpResponse(response['Key'])
-            #table = dynamodb.Table('demo')
-            #response = table.put_item(Item={'house':'white','name':'whstu'})
-            # path1 = "./template1.png"
-            # path2 = "./template2.png"
-            # s3.Bucket('18suryateja.demo1').upload_file(path1,Key='resumeTemplate1.png')
-            # s3.Bucket('18suryateja.demo1').upload_file(path2,Key='resumeTemplate2.png')
+            table = dynamodb.Table('demo')
+            response = table.put_item(Item={'house':'white','name':'whstu'})
+            path1 = "./template1.png"
+            path2 = "./template2.png"
+            s3.Bucket('18suryateja.demo1').upload_file(path1,Key='resumeTemplate1.png')
+            s3.Bucket('18suryateja.demo1').upload_file(path2,Key='resumeTemplate2.png')
             return HttpResponse("21212")
 
 class enter_details(View):
@@ -131,7 +131,7 @@ class processSelectedTemplate(View):
             doc_para = doc.add_paragraph(data['languages'])
         doc.save(data['name']+'.docx')
         res = s3.Bucket('resbucket587').upload_file(data['name']+'.docx', Key=data['name']+'.docx')
-        # table = dynamodb.Table('demo')
-        #response = table.put_item(Item={'house':'https://s3.ap-south-1.amazonaws.com/18suryateja.demo1/'+data['name'],'name':data['name']})
+        table = dynamodb.Table('demo')
+        response = table.put_item(Item={'house':'https://s3.ap-south-1.amazonaws.com/18suryateja.demo1/'+data['name'],'name':data['name']})
         bucket_file_path = "https://s3.ap-south-1.amazonaws.com/resbucket587/"+data['name']+'.docx'
         return HttpResponse(f"<br><br><center><a href={bucket_file_path}><button class='button'>Download Your Resume</button></a></center>")
